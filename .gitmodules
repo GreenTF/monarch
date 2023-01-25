@@ -1,0 +1,3 @@
+[submodule "NorthstarLauncher"]
+	path = NorthstarLauncher
+	url = https://github.com/R2Northstar/NorthstarLauncher.git
