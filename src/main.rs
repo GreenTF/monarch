@@ -1,3 +1,5 @@
+mod launcher;
+
 fn main() {
-    println!("Hello, world!");
+    launcher::load_northstar().expect("Load failed");
 }
