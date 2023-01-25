@@ -1,0 +1,5 @@
+pipeline:
+  test:
+    image: rust
+    commands:
+      - cargo test
