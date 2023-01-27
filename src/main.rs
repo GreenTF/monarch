@@ -4,6 +4,13 @@ mod launcher;
 
 #[cfg(debug_assertions)]
 fn main() {
+    use tracing::metadata::LevelFilter;
+
+    let subscriber = tracing_subscriber::FmtSubscriber::builder()
+        .with_max_level(LevelFilter::DEBUG)
+        .finish();
+
+    tracing::subscriber::set_global_default(subscriber).expect("Unable to initialize tracing");
     let res = launcher::init();
     println!("{:?}", res);
 }
