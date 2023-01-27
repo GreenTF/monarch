@@ -59,8 +59,10 @@ fn load_northstar() -> Result<()> {
             debug!("Calling InitialiseNorthstar");
             let res = main();
             debug!("Returned {res}");
-            //TODO: Initialize plugins
 
+            let plugins = unsafe { lib.get::<extern "C" fn() -> bool>(b"LoadPlugins")? };
+
+            plugins();
             Ok(())
         }
         Err(e) => Err(e.into()),
