@@ -2,7 +2,6 @@
 // support for coniditional compilation on the crate-type
 mod launcher;
 
-#[cfg(debug_assertions)]
 fn main() {
     use tracing::metadata::LevelFilter;
 
@@ -13,9 +12,4 @@ fn main() {
     tracing::subscriber::set_global_default(subscriber).expect("Unable to initialize tracing");
     let res = launcher::init();
     println!("{:?}", res);
-}
-
-#[cfg(not(debug_assertions))]
-fn main() {
-    todo!();
 }
