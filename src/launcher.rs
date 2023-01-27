@@ -1,7 +1,7 @@
 use anyhow::Result;
 use lazy_static::lazy_static;
 use libloading::os::windows::{Library, LOAD_WITH_ALTERED_SEARCH_PATH};
-use std::path::PathBuf;
+use std::{ffi::c_void, path::PathBuf, ptr::null};
 use tracing::debug;
 
 lazy_static! {
@@ -13,12 +13,58 @@ lazy_static! {
         #[cfg(windows)]
         Library::load_with_flags(path, LOAD_WITH_ALTERED_SEARCH_PATH)
     };
+    static ref NSDLL: Result<Library, libloading::Error> = unsafe{
+        let path = EXE_DIR.join("Northstar.dll");
+        debug!("loading Northstar.dll from path {}", path.display());
+        #[cfg(windows)]
+        Library::load_with_flags(path, LOAD_WITH_ALTERED_SEARCH_PATH)
+    };
+    static ref LAUNCHER: Result<Library, libloading::Error> =  unsafe {
+        let path = EXE_DIR.join("bin").join("x64_retail").join("launcher.dll");
+        debug!("loading launcher from path {}", path.display());
+        #[cfg(windows)]
+        Library::load_with_flags(path, LOAD_WITH_ALTERED_SEARCH_PATH)
+    };
 }
 
 pub fn init() -> Result<()> {
     load_tier0()?;
+    load_northstar()?;
+    start_launcher()?;
 
     Ok(())
+}
+
+fn start_launcher() -> Result<()> {
+    match &*LAUNCHER {
+        Ok(lib) => {
+            let main = unsafe {
+                lib.get::<extern "C" fn(*const c_void, *const c_void, *const c_void, i32) -> ()>(
+                    b"LauncherMain",
+                )?
+            };
+
+            main(null(), null(), null(), 0);
+
+            Ok(())
+        }
+        Err(e) => Err(e.into()),
+    }
+}
+
+fn load_northstar() -> Result<()> {
+    match &*NSDLL {
+        Ok(lib) => {
+            let main = unsafe { lib.get::<extern "C" fn() -> bool>(b"InitialiseNorthstar")? };
+            debug!("Calling InitialiseNorthstar");
+            let res = main();
+            debug!("Returned {res}");
+            //TODO: Initialize plugins
+
+            Ok(())
+        }
+        Err(e) => Err(e.into()),
+    }
 }
 
 fn load_tier0() -> Result<()> {
