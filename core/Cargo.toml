@@ -8,5 +8,8 @@ name = "monarch"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+detour3 = "*"
+paste = "1.0.11"
 tracing = "0.1.37"
+winapi = "0.3.9"
 
