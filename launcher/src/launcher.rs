@@ -1,7 +1,7 @@
 use anyhow::Result;
 use lazy_static::lazy_static;
 use libloading::os::windows::{Library, LOAD_WITH_ALTERED_SEARCH_PATH};
-use std::{ffi::c_void, path::PathBuf, ptr::null};
+use std::{ffi::c_void, path::PathBuf, ptr::null, thread};
 use tracing::debug;
 
 lazy_static! {
@@ -30,6 +30,7 @@ lazy_static! {
 pub fn init() -> Result<()> {
     load_tier0()?;
     load_northstar()?;
+    // thread::spawn(|| monarch::initialize_monarch().expect("Monarch init failed"));
     start_launcher()?;
 
     Ok(())

@@ -1,12 +1,10 @@
+mod client;
 
-static_detour! {
-    static: HelloHook: fn();
-}
+use std::error::Error;
 
-unsafe fn enable_hello() {
-    // HelloHook;
-}
+use self::client::enable_text_msg_hook;
 
-fn init() {
-    unsafe {enable_hello()};
+pub fn init_logging_hooks() -> Result<(), Box<dyn Error>> {
+    // dll_callback!("client.dll", enable_text_msg_hook);
+    Ok(())
 }
