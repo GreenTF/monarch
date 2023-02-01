@@ -2,11 +2,14 @@
 // support for coniditional compilation on the crate-type
 mod launcher;
 
+use tracing_subscriber::fmt::format;
+
 fn main() {
     use tracing::metadata::LevelFilter;
 
     let subscriber = tracing_subscriber::FmtSubscriber::builder()
         .with_max_level(LevelFilter::DEBUG)
+        .event_format(format().compact().with_ansi(true))
         .finish();
 
     tracing::subscriber::set_global_default(subscriber).expect("Unable to initialize tracing");

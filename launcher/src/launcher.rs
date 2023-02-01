@@ -1,8 +1,8 @@
 use anyhow::Result;
 use lazy_static::lazy_static;
 use libloading::os::windows::{Library, LOAD_WITH_ALTERED_SEARCH_PATH};
-use std::{ffi::c_void, path::PathBuf, ptr::null, thread};
-use tracing::debug;
+use std::{ffi::c_void, path::PathBuf, ptr::null};
+use tracing::{debug, error};
 
 lazy_static! {
     static ref EXE_DIR: PathBuf = std::env::current_exe().expect("Unable to get the path to the executable").parent().expect("Executable path has no parent dir").to_path_buf();
@@ -28,9 +28,14 @@ lazy_static! {
 }
 
 pub fn init() -> Result<()> {
+    // set the current directory
+    if let Err(e) = std::env::set_current_dir(EXE_DIR.as_path()){
+        error!("Unable to set working directory to executable's current dir");
+        error!("{e}");
+    }
     load_tier0()?;
     load_northstar()?;
-    // thread::spawn(|| monarch::initialize_monarch().expect("Monarch init failed"));
+    monarch::initialize_monarch().expect("Monarch init failed");
     start_launcher()?;
 
     Ok(())

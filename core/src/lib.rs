@@ -28,7 +28,7 @@ pub extern "system" fn DllMain(_: HINSTANCE, call_reason: DWORD, _: LPVOID) -> B
 
 pub fn initialize_monarch() -> Result<(), Box<dyn Error>> {
     info!("Start monarch init");
-    // hooks::init_loading_hooks()?;
-    // logging::init_logging_hooks()?;
+    hooks::init_loading_hooks()?;
+    logging::init_logging_hooks()?;
     Ok(())
 }
